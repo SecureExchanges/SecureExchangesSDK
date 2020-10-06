@@ -69,7 +69,7 @@ namespace SecureExchangesSamples
       List<RecipientInfo> recipients = new List<RecipientInfo>();
       
       // Please enter the email and Phone number here
-      recipients.Add(new RecipientInfo() { Email = "cboivin@secure-exchanges.com", Phone = ""  });
+      recipients.Add(new RecipientInfo() { Email = "support@secure-exchanges.com", Phone = ""  });
 
       // That is a password protection level
       string messagePassword = _globalPassword;
@@ -159,7 +159,7 @@ namespace SecureExchangesSamples
 
 
     /// <summary>
-    /// Use this mes
+    /// That case is not real, but let you see how the SDK are able to send a secure message, then read the same message.
     /// </summary>
     /// <param name="link"></param>
     /// <param name="password"></param>
@@ -177,12 +177,13 @@ namespace SecureExchangesSamples
       }
     }
 
+    
 
     public void ReadSecureExchangesMessage(string link, string password, string digit)
     {
       SecureExchangesMessage msg = MessageHelper.GetSecureExchangesMessageFromLink(link);
 
-      GetMessageResponse messageResponse =  SecureExchangesSDK.Helpers.MessageHelper.GetMessage(new SecureExchangesSDK.Models.Args.GetMessageArgs(EndPointURI, TestSerialNumber, TestAPIUser, TestAPIPsw, msg.MessageID, msg.Cpart, msg.Sems, msg.NIv, msg.P2, password, digit));
+      GetMessageResponse messageResponse =  SecureExchangesSDK.Helpers.MessageHelper.GetMessage(new SecureExchangesSDK.Models.Args.GetMessageArgs(EndPointURI, TestSerialNumber, TestAPIUser, TestAPIPsw, msg.MessageID, msg.Cpart, msg.Sems, msg.NIv, msg.P2, password, msg.Pit, digit, msg.Sit));
       if (messageResponse != null)
       {
         // this will be the un encrypted message
@@ -219,5 +220,20 @@ namespace SecureExchangesSamples
 
 
     }
-  }
+
+    [TestMethod]
+    public void IsValidLicence()
+    {
+      // True
+      bool isVAlid = SecureExchangesSDK.Helpers.LicenceHelper.IsLicenceIsValid(new IsLicenceIsValidArgs()
+      {
+        ApiPassword = TestAPIPsw,
+        ApiUser = TestAPIUser,
+        Email = ConfigurationManager.AppSettings["LicenceEmail"].ToString(),
+        EndPointUri = EndPointURI,
+        Serial = TestSerialNumber
+      });
+
+    }
+    }
 }

@@ -12,8 +12,9 @@ namespace SecureExchangesSamples
     [TestMethod]
     public void TestConnectionWithServer()
     {
-      
-      SecureExchangesSDK.Helpers.StateHelper.TestServer(new BaseEndpointConfiguration(new Uri(ConfigurationManager.AppSettings["endpointURI"].ToString())));
+      System.Reflection.Assembly assembly = System.Reflection.Assembly.LoadFrom("SecureExchangesSDK.dll");
+      string version = assembly.GetName().Version.ToString();
+      SecureExchangesSDK.Helpers.StateHelper.TestServer(new BaseEndpointConfiguration(new Uri(ConfigurationManager.AppSettings["endpointURI"].ToString())),$"SDK {version}");
     }
   }
 }
