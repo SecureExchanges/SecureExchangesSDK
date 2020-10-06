@@ -46,13 +46,13 @@ namespace SecureExchangesSamples
     /// <summary>
     /// This is an example how to send message to multiple recipient.
     /// </summary>
-     [TestMethod]
+    [TestMethod]
     public MultiRecipientAnswer MultiSendEmailWithLocalFiles()
     {
       // Create a files list path : physical path
       List<string> files = new List<string>();
       // Get the project path
-      
+
 
       // Append the file to send and encrypt
       files.Add(Path.Combine(RootPath, "Files", "logo-full.png"));
@@ -67,9 +67,9 @@ namespace SecureExchangesSamples
       // Create a list of recipient. Phone number could be filled to received SMS
       // WARNING : the SendMethodEnum must be set to msgEmailCodeSms to received an email with a sms code to open it
       List<RecipientInfo> recipients = new List<RecipientInfo>();
-      
+
       // Please enter the email and Phone number here
-      recipients.Add(new RecipientInfo() { Email = "support@secure-exchanges.com", Phone = ""  });
+      recipients.Add(new RecipientInfo() { Email = "support@secure-exchanges.com", Phone = "" });
 
       // That is a password protection level
       string messagePassword = _globalPassword;
@@ -114,7 +114,7 @@ namespace SecureExchangesSamples
         {
           // Here use a.Answer.HtmlMsg to send your email with your SMTP server
           // a.Answer.Guid -- this is the reference of a messageid. Keep it in your système to retreived log about this message
-          
+
 
         }
       }
@@ -141,7 +141,7 @@ namespace SecureExchangesSamples
       {
         // success envelop created
         // Send this url by email, this is your envelop email
-       // response.Url;
+        // response.Url;
       }
     }
 
@@ -167,23 +167,23 @@ namespace SecureExchangesSamples
     [TestMethod]
     public void SendAndReadMessage()
     {
-     var answer =  MultiSendEmailWithLocalFiles();
+      var answer = MultiSendEmailWithLocalFiles();
       if (answer.Status == 200)
       {
-        foreach(var messageAnswer in answer.RecipientsAnswer)
+        foreach (var messageAnswer in answer.RecipientsAnswer)
         {
           ReadSecureExchangesMessage(messageAnswer.Answer.URL, _globalPassword, null);
         }
       }
     }
 
-    
+
 
     public void ReadSecureExchangesMessage(string link, string password, string digit)
     {
       SecureExchangesMessage msg = MessageHelper.GetSecureExchangesMessageFromLink(link);
 
-      GetMessageResponse messageResponse =  SecureExchangesSDK.Helpers.MessageHelper.GetMessage(new SecureExchangesSDK.Models.Args.GetMessageArgs(EndPointURI, TestSerialNumber, TestAPIUser, TestAPIPsw, msg.MessageID, msg.Cpart, msg.Sems, msg.NIv, msg.P2, password, msg.Pit, digit, msg.Sit));
+      GetMessageResponse messageResponse = SecureExchangesSDK.Helpers.MessageHelper.GetMessage(new SecureExchangesSDK.Models.Args.GetMessageArgs(EndPointURI, TestSerialNumber, TestAPIUser, TestAPIPsw, msg.MessageID, msg.Cpart, msg.Sems, msg.NIv, msg.P2, password, msg.Pit, digit, msg.Sit));
       if (messageResponse != null)
       {
         // this will be the un encrypted message
@@ -197,26 +197,35 @@ namespace SecureExchangesSamples
 
     private void DownloadMessageFile(GetMessageResponse response, string downloadPath)
     {
-      
-        FileHelper fileHelper = new FileHelper();
-        var finalPath = fileHelper.PrepareFileToDownload(response.FilesMetaData, downloadPath);
-        fileHelper.DownloadSecureFiles(response.FilesMetaData, downloadPath);
 
-        bool finish = false;
-        int maxIteration = 1000;
-        int iteration = 0;
-        int fileFinish = 0;
-
-        fileHelper.DownloadFinish_event += (file) =>
-        {
-          
+      FileHelper fileHelper = new FileHelper();
+      var finalPath = fileHelper.PrepareFileToDownload(response.FilesMetaData, downloadPath);
+      fileHelper.DownloadSecureFiles(response.FilesMetaData, downloadPath);
+      int fileFinish = 0;
+      int totalFile = response.FilesMetaData.Files.Count;
+      // The event for a file
+      fileHelper.DownloadFinish_event += (file) =>
+      {
+          // a file is finish
           fileFinish++;
-         
-        };
+      };
+      // all the file are finish
+      fileHelper.DownloadsFinish_event += (files) =>
+      {
+        // files are downloadedFiles
+        if (fileFinish != files.Count)
+        {
+          // an error has occur
+        }
+        else
+        {
+          // your files are downloaded and decrypted
+        }
+      };
 
-       
-     
-   
+
+
+
 
 
     }
@@ -235,5 +244,5 @@ namespace SecureExchangesSamples
       });
 
     }
-    }
+  }
 }
