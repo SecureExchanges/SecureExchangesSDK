@@ -21,7 +21,7 @@ You can define template of signature zones online and then use it with the API.
 If you send file witout defined signature zones ie.(Signature, initial, text, date, signature date, number) your recipient will be allowed to sign where he want.
 
 If you need to sign the file after all the recipients signs, you will need to set the value of the args.OwnerDontNeedToSign to "false". See code sample bellow
-See the complete example in the **SendSignFile** method in the **MessageHelperTest.cs** class.
+See the complete example in the **SendSignFile** method in the **[MessageHelperTest.cs](https://github.com/cboivin80/SecureExchangesSDK/blob/master/CodeSample/CodeSample/MessageHelperTest.cs)** class.
 >       //Create the message args
 >       var args = new MutliRecipientArgs(
 >           EndPointURI,
