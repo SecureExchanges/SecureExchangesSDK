@@ -104,7 +104,7 @@ When the feature is activated, you can also retreived the return informations to
       {
         // If you get a callback API activated set it to true, if not set it to no
         ReplyToAPI = false,
-        // if reply api is activated
+        // Object that you want to retreived when you will get back the message
         CallBackParameters = "Your callback parameter, xml, json what you want"
       });
 
