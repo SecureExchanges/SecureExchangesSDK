@@ -9,6 +9,7 @@ using SecureExchangesSDK.Models;
 using SecureExchangesSDK.Models.Answer;
 using SecureExchangesSDK.Models.Args;
 using SecureExchangesSDK.Models.Entity;
+using SecureExchangesSDK.Models.JSON;
 using SecureExchangesSDK.Models.Transport;
 using SecureExchangesSDK.SecureExchanges;
 
@@ -177,6 +178,126 @@ namespace SecureExchangesSamples
       }
     }
 
+    /// <summary>
+    /// Show how we can send secure file to get signed
+    /// </summary>
+    [TestMethod]   
+    public void SendSignFile()
+    {
+      // Create a list of recipient. Phone number could be filled to received SMS
+      // WARNING : the SendMethodEnum must be set to msgEmailCodeSms to received an email with a sms code to open it
+      List<RecipientInfo> recipients = new List<RecipientInfo>();
+      recipients.Add(new RecipientInfo() { Email = "support@secure-exchanges.com", Phone = "" });
+      recipients.Add(new RecipientInfo() { Email = "teams@secure-exchanges.com", Phone = "" });
+
+      // Create a files list path : physical path
+      List<string> files = new List<string>();
+      // The PDF File that need to be signed
+      files.Add(Path.Combine(RootPath, "Files", "model.pdf"));
+
+      /// Load the template associated with that serial number
+      var loadTemplateAnswer = SerialHelper.LoadSignsTemplate(new LoadSignsTemplateArgs()
+      {
+        EndPointUri = EndPointURI,
+        Serial = TestSerialNumber,
+        ApiUser = TestAPIUser,
+        ApiPassword = TestAPIPsw
+      });
+
+      // Create a list of SignFilesRequired
+      List<SignFilesRequired> signFiles = new List<SignFilesRequired>();
+
+      // Create a dictionnary of recipients info with FileDefinition signatures
+      Dictionary<RecipientInfo, List<FileZoneDefinition>> recipientIndex = new Dictionary<RecipientInfo, List<FileZoneDefinition>>();
+      // Identify in the list of files, the file need to be signed
+      foreach (string f in files)
+      {
+        // Retreived the SHA512 of file need to be signed
+        string SHA512 = CryptoHelper.GetSHA512OfFile(f);
+        // Add that checksum to the signFilesRequired list
+        signFiles.Add(new SignFilesRequired()
+        {
+          SHA512 = SHA512
+        });
+        // Because the name of the zones defined in the template are client 1, client 2, ...
+        int clientPos = 1;
+        // iterate trhow the recipient to specify the defines zone for the specific file for each recipients
+        foreach (var r in recipients)
+        {
+          // Validate that we found template. If no template exist, the signature will be in freemode
+          if (loadTemplateAnswer.Status == 200 && loadTemplateAnswer.Template != null)
+          {
+
+            // Find the right Zonefiles definition for that file. We search the template by filename, because we juste saved the template with
+            // the file name in the system
+            // We could also find the right template by the checksum, but the checksum of the file must be identical of the template item.FileDefinition.UniqueName == SHA512
+            var template = loadTemplateAnswer.Template.Find(item => string.Compare(item.Name, Path.GetFileName(f), true) == 0);
+            if (template != null)
+            {
+              // We add to the dictionnary the definition zone for that recipient. client 1 = recipient1, client2 = recipient2 etc ...
+              SignHelper.AddFileZoneDefToRecipientIndex(recipientIndex, template.FileDefinition.ZonesDef, SHA512,
+                new KeyValuePair<string, RecipientInfo>($"client {clientPos}", r));
+
+            }
+          }
+          clientPos++;
+        }
+      }
+
+      // Configure the message body, and the subject
+      string HTMLBody = "<strong>Please sign the files</strong>";
+      string EmailSubject = "Sign file";
+      string psw = "protected";
+      // Let you send the mail with your own smtp server
+      bool sendWitMyOwnSMPTServer = false;
+
+
+      //Create the message args
+      var args = new MutliRecipientArgs(
+          EndPointURI,
+         TestSerialNumber,
+         TestAPIUser,
+         TestAPIPsw,
+         recipients,
+         HTMLBody,
+         EmailSubject,
+         psw,
+         null,
+         SecureExchangesSDK.SecureExchanges.SendMethodEnum.onlyEmail,
+         sendWitMyOwnSMPTServer,
+         true,
+         true, "fr-CA", 1, 5)
+      { FilesPath = files };
+      // Because we have some file to sign, we add them to the args
+      // Notes that you can send files witout signature only to the first recipient, if you have multiple recipient.
+      if (signFiles.Count > 0)
+      {
+        // Set the files to be sign
+        args.FileToSign = signFiles;
+        // If the owner of the licence need to sign the file, set the value to false.
+        // If it's set to false, the licence owner will receive an email when the file will be ready to sign by him
+        args.OwnerDontNeedToSign = true;
+        // Set the recipient zone definition
+        args.SignRecipientsZoneDef = SignHelper.ConvertRecipientIndexToList(recipientIndex);
+      }
+
+      // Call the multicecipient method 
+      MultiRecipientAnswer answer = MessageHelper.MultiRecipientMessage(args);
+      if (answer.Status == 200)
+      {
+        foreach (var a in answer.RecipientsAnswer)
+        {
+          // Here use a.Answer.HtmlMsg to send your email with your SMTP server
+          // a.Answer.Guid -- this is the reference of a messageid. Keep it in your système to retreived log about this message
+
+
+        }
+      }
+      else
+      {
+        throw new Exception($"Erreur {answer.Status}");
+      }
+    }
 
 
     public void ReadSecureExchangesMessage(string link, string password, string digit)
@@ -206,8 +327,8 @@ namespace SecureExchangesSamples
       // The event for a file
       fileHelper.DownloadFinish_event += (file) =>
       {
-          // a file is finish
-          fileFinish++;
+        // a file is finish
+        fileFinish++;
       };
       // all the file are finish
       fileHelper.DownloadsFinish_event += (files) =>

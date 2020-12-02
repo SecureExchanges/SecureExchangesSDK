@@ -1,3 +1,4 @@
+
 # Secure Exchanges SDK
 
 Secure Exchanges allows you to send confidential information by email. It's a end to end encryption SaaS.
@@ -15,6 +16,43 @@ In the code examples you will find how:
 - To be able to read a received message
 - To be able to see the logs and status of a sent message
 
+### How to get files signed ###
+You can define template of signature zones online and then use it with the API.
+If you send file witout defined signature zones ie.(Signature, initial, text, date, signature date, number) your recipient will be allowed to sign where he want.
+
+If you need to sign the file after all the recipients signs, you will need to set the value of the args.OwnerDontNeedToSign to "false". See code sample bellow
+See the complete example in the **SendSignFile** method in the **MessageHelperTest.cs** class.
+>       //Create the message args
+>       var args = new MutliRecipientArgs(
+>           EndPointURI,
+>          TestSerialNumber,
+>          TestAPIUser,
+>          TestAPIPsw,
+>          recipients,
+>          HTMLBody,
+>          EmailSubject,
+>          psw,
+>          null,
+>          SecureExchangesSDK.SecureExchanges.SendMethodEnum.onlyEmail,
+>          sendWitMyOwnSMPTServer,
+>          true,
+>          true, "fr-CA", 1, 5)
+>       { FilesPath = files };
+>       // Because we have some file to sign, we add them to the args
+>       // Notes that you can send files witout signature only to the first recipient, if you have multiple recipient.
+>       if (signFiles.Count > 0)
+>       {
+>         // Set the files to be sign
+>         args.FileToSign = signFiles;
+>         // If the owner of the licence need to sign the file, set the value to false.
+>         // If it's set to false, the licence owner will receive an email when the file will be ready to sign by him
+>         args.OwnerDontNeedToSign = true;
+>         // Set the recipient zone definition
+>         args.SignRecipientsZoneDef = SignHelper.ConvertRecipientIndexToList(recipientIndex);
+>       }
+> 
+>       // Call the multicecipient method 
+>       MultiRecipientAnswer answer = MessageHelper.MultiRecipientMessage(args);
 
 ### How to send a message ###
 
