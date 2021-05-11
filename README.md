@@ -18,10 +18,10 @@ If you need to sign the file after all the recipients signs, you will need to se
 >          sendWitMyOwnSMPTServer, /// Specify if the user will send the message by it'self if is set to false, the SEMS (Secure Exchanges Mail System) will send the message
 >          true,             /// Specify if the subject need to be show
 >          true,             /// Specify if the owner must be notify by email when the message is open 
-           "fr-CA",          /// Specify the culture of the message send to the recipient
-           1,                /// Specify the number of open time before the message is destroy value must be between 1 - 99
-           5                 /// Specify the number of minutes before the message expire. Default value 14 days. 50400
-        )
+>          "fr-CA",          /// Specify the culture of the message send to the recipient
+>          1,                /// Specify the number of open time before the message is destroy value must be between 1 - 99
+>          5                 /// Specify the number of minutes before the message expire. Default value 14 days. 50400
+>       )
 >       { FilesPath = files }; /// The list of files path to attach to the message
 >       
 >       // Because we have some file to sign, we add them to the args
