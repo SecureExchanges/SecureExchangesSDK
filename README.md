@@ -1,4 +1,4 @@
-###SandBox
+### SandBox
 
 If you use the sandbox "preview", you must specify the file Handler and the SEMS Handler for the sandbox environment.
 Those Setthings are global to the application.
