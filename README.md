@@ -1,3 +1,13 @@
+###SandBox
+
+If you use the sandbox "preview", you must specify the file Handler and the SEMS Handler for the sandbox environment.
+Those Setthings are global to the application.
+
+> SettingsHelper.CustomFileHandler = "https://preview.secure-exchanges.com/Handler/ReadFileTob64.ashx";
+> SettingsHelper.CustomSEMSEndpoint = "https://previewsems.secure-exchanges.com/SEMS_api.asmx";
+
+** PLEASE NOTES THAT THOSES LINES MUST NOT BE PRESENT FOR PRODUCTION
+
 ### How to get files signed ###
 You can define template of signature zones online and then use it with the API.
 If you send file witout defined signature zones ie.(Signature, initial, text, date, signature date, number) your recipient will be allowed to sign where he want.
