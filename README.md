@@ -1,43 +1,39 @@
+###SandBox
 
-# Secure Exchanges SDK
+If you use the sandbox "preview", you must specify the file Handler and the SEMS Handler for the sandbox environment.
+Those Setthings are global to the application.
 
-Secure Exchanges allows you to send confidential information by email. It's a end to end encryption SaaS.
+> SettingsHelper.CustomFileHandler = "https://preview.secure-exchanges.com/Handler/ReadFileTob64.ashx";
+> SettingsHelper.CustomSEMSEndpoint = "https://previewsems.secure-exchanges.com/SEMS_api.asmx";
 
-A Microsoft Outlook connector exists to allow our users to have a completely transparent experience.
-
-We have also made available to them an SDK available in Nuget at the following address https://www.nuget.org/packages/SecureExchanges/
-
-To use our SDK you need a user license or a trial version license.
-
-In the code examples you will find how:
-
-- Sent a message with attachments
-- Protected with a password, SMS code or both
-- To be able to read a received message
-- To be able to see the logs and status of a sent message
+** PLEASE NOTES THAT THOSES LINES MUST NOT BE PRESENT FOR PRODUCTION
 
 ### How to get files signed ###
 You can define template of signature zones online and then use it with the API.
 If you send file witout defined signature zones ie.(Signature, initial, text, date, signature date, number) your recipient will be allowed to sign where he want.
 
-If you need to sign the file after all the recipients signs, you will need to set the value of the args.OwnerDontNeedToSign to "false". See code sample bellow
-See the complete example in the **SendSignFile** method in the **[MessageHelperTest.cs](https://github.com/cboivin80/SecureExchangesSDK/blob/master/CodeSample/CodeSample/MessageHelperTest.cs)** class.
+If you need to sign the file after all the recipients signs, you will need to set the value of the args.OwnerDontNeedToSign to "false". See code sample bellow or see the complete example in the **SendSignFile** method in the **[MessageHelperTest.cs](https://github.com/cboivin80/SecureExchangesSDK/blob/master/CodeSample/CodeSample/MessageHelperTest.cs)** class.
 >       //Create the message args
 >       var args = new MutliRecipientArgs(
->           EndPointURI,
->          TestSerialNumber,
->          TestAPIUser,
->          TestAPIPsw,
->          recipients,
->          HTMLBody,
->          EmailSubject,
->          psw,
->          null,
->          SecureExchangesSDK.SecureExchanges.SendMethodEnum.onlyEmail,
->          sendWitMyOwnSMPTServer,
->          true,
->          true, "fr-CA", 1, 5)
->       { FilesPath = files };
+>          EndPointURI,      /// The endpoint configuration name of Secure Exchanges
+>          TestSerialNumber, /// Specify the serial of the licence owner
+>          TestAPIUser,      /// Specify the API user retreived from Secure Exchanges
+>          TestAPIPsw,       /// Specify the API password retreived from Secure Exchanges
+>          recipients,       /// Specify the list of recipent
+>          HTMLBody,         /// Specify the message to Secure (must be in clear) the helper will encrypt the message
+>          EmailSubject,     /// Specify the subject of the message
+>          psw,              /// The password to secure the message. The password will be share between all the Recipient. Set it As null if your don't need a password
+>          null,             /// The list of files (memory) to attach to the message
+>          SecureExchangesSDK.SecureExchanges.SendMethodEnum.onlyEmail, /// The SendMethod mode, OnlyEmail, EmailWithSMS. If EmailWithSMS or SMSwithEmail specify, all the recipient must have a cell number in the RecipientInfo
+>          sendWitMyOwnSMPTServer, /// Specify if the user will send the message by it'self if is set to false, the SEMS (Secure Exchanges Mail System) will send the message
+>          true,             /// Specify if the subject need to be show
+>          true,             /// Specify if the owner must be notify by email when the message is open 
+>          "fr-CA",          /// Specify the culture of the message send to the recipient
+>          1,                /// Specify the number of open time before the message is destroy value must be between 1 - 99
+>          5                 /// Specify the number of minutes before the message expire. Default value 14 days. 50400
+>       )
+>       { FilesPath = files }; /// The list of files path to attach to the message
+>       
 >       // Because we have some file to sign, we add them to the args
 >       // Notes that you can send files witout signature only to the first recipient, if you have multiple recipient.
 >       if (signFiles.Count > 0)
