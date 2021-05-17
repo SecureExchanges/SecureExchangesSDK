@@ -74,6 +74,52 @@ You will see an complete code sample in MessageHelperTest.cs
       MultiRecipientAnswer answer = MessageHelper.MultiRecipientMessage(args);
 ```
 
+### How to download a filepath and binary file
+```
+   ////////////////////////////// Upload Test ////////////////////////////////////
+
+   string filePath = GlobalSettings.LargeFilePath; // This is a large file path
+   string filePathBinary = GlobalSettings.smallFilePath; // This is a small binary file
+   filesPath.Add(filePathBinary); // A file list (we need it later in this example to compare)
+   
+   // A function that uploads the file path and the binary file and generates the link
+   var url = GenerateLinkForUploadedFile(filePath, filePathBinary);
+
+
+   ////////////////////////////// Download Test ////////////////////////////////////
+
+   var msg = ReadMessage(url, "", ""); // Get the message
+
+
+   FileHelper down_fh = new FileHelper(); // We create a FileHelper to attach event to downloaded files
+   
+   // Attaching event after each file download
+   down_fh.DownloadFinish_event += (DownloadedFileWithMetaData file) =>
+   {
+       //Finding the original file in the file list 
+       string originalFile = filesPath.Find(item => item.Contains(file.FileName));
+
+       // This function compare the downloaded file with the original file
+       MakeSureThatFile(file, originalFile);
+   };
+
+   // Attaching event after all download finished
+   down_fh.DownloadsFinish_event += (List<DownloadedFile> files) =>
+   {
+       Assert.AreEqual(files.Count, msg.FilesMetaData.Files.Count(), "Number of files are diffrent");
+
+       // Compare all files we there originale
+       for (int i = 0; i < msg.FilesMetaData.Files.Count(); i++)
+       {
+           string originalFile = filesPath.Find(item => item.Contains(files[i].FileName));
+           MakeSureThatFile(files[i], originalFile);
+       }
+   };
+   
+   //After attachement we can start the download
+   down_fh.DownloadSecureFiles(msg.FilesMetaData, "./download folder");
+```
+            
 ### Get the status of your send message ###
 
 If your code just send a message to someone, and need to get status about it
