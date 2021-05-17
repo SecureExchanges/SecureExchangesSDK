@@ -101,11 +101,44 @@ You will see an complete code sample in MessageHelperTest.cs
 
        // This function compare the downloaded file with the original file
        MakeSureThatFile(file, originalFile);
+       
+       
+        FileInfo originalFileInfo = new FileInfo(originalFile);
+        // The final file path downloaded
+        var filePath = file.FilePath;
+       // The file state of the downloaded file. The state could be Process, NotProcess ...
+       var state = file.FileState;
+       // Is the file has been successfly uncrypted
+       var isFileUncrypted = file.Uncrypted;
+           
+
+            if (isSuccess)
+                Assert.IsTrue(file.Success, $"{methodName}: The file is not flagged has succces");
+
+            if (isWellNamed)
+            {
+                if (isTargetAlreadyExist)
+                {
+                    string[] fileNameParts = Path.GetFileName(file.FilePath).Split('_');
+                    Guid guid = Guid.Empty;
+                    Assert.IsTrue(Guid.TryParse(fileNameParts[0], out guid), $"{methodName}: The file prefixe is not flagged has succces. File info = {fileNameParts[0]}");
+                    Assert.AreEqual(fileNameParts[1], originalFileInfo.Name, $"{methodName}: The files name are supposed to be same. File info = {fileNameParts[1]} vs {originalFileInfo.Name}");
+                }
+                else
+                {
+                    Assert.AreEqual(file.FileName, originalFileInfo.Name, $"{methodName}: The files name are supposed to be same. File info = {file.FileName} vs {originalFileInfo.Name}");
+                }
+            }
+
+       
    };
 
    // Attaching event after all download finished
    down_fh.DownloadsFinish_event += (List<DownloadedFile> files) =>
    {
+       var numberOfFiles = files.Count; // Get the number of files in the collection
+       
+   
        Assert.AreEqual(files.Count, msg.FilesMetaData.Files.Count(), "Number of files are diffrent");
 
        // Compare all files we there originale
