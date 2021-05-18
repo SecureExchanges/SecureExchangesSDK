@@ -1,4 +1,4 @@
-###SandBox
+### SandBox
 
 If you use the sandbox "preview", you must specify the file Handler and the SEMS Handler for the sandbox environment.
 Those Setthings are global to the application.
@@ -50,7 +50,7 @@ If you need to sign the file after all the recipients signs, you will need to se
 >       // Call the multicecipient method 
 >       MultiRecipientAnswer answer = MessageHelper.MultiRecipientMessage(args);
 
-### How to send a message ###
+### How to send a message with events ###
 
 It's very easy to send a message with file or not with Secure Exchanges
 You will see an complete code sample in MessageHelperTest.cs
@@ -70,8 +70,59 @@ You will see an complete code sample in MessageHelperTest.cs
          true,
          getNotify, culture, 1, 5)
       { FilesPath = files };
+      
+      // Attaching events
+      
+      fileHelper.Before_UploadChunksErrorRetry += (IEnumerable<int> chunks, string inputFile, Guid fileIdentifier) =>
+      {
+          /// This is the delegate associated to the event when chunks are in errors, before retry upload.
+          /// <param name="chunks">Chunks list</param>
+          /// <param name="inputFile">File path</param>
+          /// <param name="fileIdentifier">File ID</param>
+      };
+      
+      fileHelper.UploadFileStart_Event += (string eventFileName, long fileSize) =>
+      {
+          /// This event occur before the file start to be uploaded to the server.
+          var fileName = eventFileName;
+          var theFileSize = fileSize;
+      };
+
+      fileHelper.UploadFileEnd_Event += (string eventFileName, long fileSize) =>
+      {
+          /// This event occur when all the file chunks has finish
+      };
+     
+      fileHelper.UploadFinish_Event += () =>
+      {
+          /// The event call when a chuck finish upload
+      };
+
+      fileHelper.UploadFinishFiles_Event += (List<UploadFiles> uploadedFiles) =>
+      {
+          /// This event occur when all the files upload has finish
+          for (int i = 0; i < uploadedFiles.Count; i++)
+          {
+              UploadFiles upf = uploadedFiles[i]; // That is the model of files chunk when file are uploaded to the Secure Exchanges server
+              
+              string fileName = upf.RealFileName; // Real file name of the file
+              
+              int fileLength = upf.BytesLenght; // The file length (the size of the file). If you need the beauty filesize, you can use the GetTextSize
+
+              string fileHash = upf.Hash; // The Hex MD5 file hash
+              string fileSHA512 = upf.SHA512; // The file SHA512
+
+              double originalfile_totalPart = upf.TotalPart; // The total number of chunk part that file
+
+              Guid guid = upf.CryptedHandShakeID; // That is the cryptedHandShakeID that was use to upload the file
+          }
+
+      };
+      
       // Call the multicecipient method 
       MultiRecipientAnswer answer = MessageHelper.MultiRecipientMessage(args);
+      
+      var status = answer.Status; // The state could be 200, 403, ....
 ```
 
 ### How to download a filepath and binary file
@@ -95,58 +146,22 @@ You will see an complete code sample in MessageHelperTest.cs
    
    // Attaching event after each file download
    down_fh.DownloadFinish_event += (DownloadedFileWithMetaData file) =>
-   {
-       //Finding the original file in the file list 
-       string originalFile = filesPath.Find(item => item.Contains(file.FileName));
-
-       // This function compare the downloaded file with the original file
-       MakeSureThatFile(file, originalFile);
+   {               
+       var filePath = file.FilePath; // The final file path downloaded
        
+       var fileName = file.FileName; // The final file name downloaded       
        
-        FileInfo originalFileInfo = new FileInfo(originalFile);
-        // The final file path downloaded
-        var filePath = file.FilePath;
-       // The file state of the downloaded file. The state could be Process, NotProcess ...
-       var state = file.FileState;
-       // Is the file has been successfly uncrypted
-       var isFileUncrypted = file.Uncrypted;
-           
-
-            if (isSuccess)
-                Assert.IsTrue(file.Success, $"{methodName}: The file is not flagged has succces");
-
-            if (isWellNamed)
-            {
-                if (isTargetAlreadyExist)
-                {
-                    string[] fileNameParts = Path.GetFileName(file.FilePath).Split('_');
-                    Guid guid = Guid.Empty;
-                    Assert.IsTrue(Guid.TryParse(fileNameParts[0], out guid), $"{methodName}: The file prefixe is not flagged has succces. File info = {fileNameParts[0]}");
-                    Assert.AreEqual(fileNameParts[1], originalFileInfo.Name, $"{methodName}: The files name are supposed to be same. File info = {fileNameParts[1]} vs {originalFileInfo.Name}");
-                }
-                else
-                {
-                    Assert.AreEqual(file.FileName, originalFileInfo.Name, $"{methodName}: The files name are supposed to be same. File info = {file.FileName} vs {originalFileInfo.Name}");
-                }
-            }
-
+       var state = file.FileState; // The file state of the downloaded file. The state could be Process, NotProcess ...       
        
+       var isFileUncrypted = file.Uncrypted; // Is the file has been successfly uncrypted           
+       
+       bool isSuccess = file.Success; //If the file is flagged has succces                 
    };
 
    // Attaching event after all download finished
    down_fh.DownloadsFinish_event += (List<DownloadedFile> files) =>
    {
        var numberOfFiles = files.Count; // Get the number of files in the collection
-       
-   
-       Assert.AreEqual(files.Count, msg.FilesMetaData.Files.Count(), "Number of files are diffrent");
-
-       // Compare all files we there originale
-       for (int i = 0; i < msg.FilesMetaData.Files.Count(); i++)
-       {
-           string originalFile = filesPath.Find(item => item.Contains(files[i].FileName));
-           MakeSureThatFile(files[i], originalFile);
-       }
    };
    
    //After attachement we can start the download
