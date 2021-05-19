@@ -50,7 +50,7 @@ If you need to sign the file after all the recipients signs, you will need to se
 >       // Call the multicecipient method 
 >       MultiRecipientAnswer answer = MessageHelper.MultiRecipientMessage(args);
 
-### How to send a message ###
+### How to send a message with events ###
 
 It's very easy to send a message with file or not with Secure Exchanges
 You will see an complete code sample in MessageHelperTest.cs
@@ -70,10 +70,104 @@ You will see an complete code sample in MessageHelperTest.cs
          true,
          getNotify, culture, 1, 5)
       { FilesPath = files };
+      
+      // Attaching events
+      
+      fileHelper.Before_UploadChunksErrorRetry += (IEnumerable<int> chunks, string inputFile, Guid fileIdentifier) =>
+      {
+          /// This is the delegate associated to the event when chunks are in errors, before retry upload.
+          /// <param name="chunks">Chunks list</param>
+          /// <param name="inputFile">File path</param>
+          /// <param name="fileIdentifier">File ID</param>
+      };
+      
+      fileHelper.UploadFileStart_Event += (string eventFileName, long fileSize) =>
+      {
+          /// This event occur before the file start to be uploaded to the server.
+          var fileName = eventFileName;
+          var theFileSize = fileSize;
+      };
+
+      fileHelper.UploadFileEnd_Event += (string eventFileName, long fileSize) =>
+      {
+          /// This event occur when all the file chunks has finish
+      };
+     
+      fileHelper.UploadFinish_Event += () =>
+      {
+          /// The event call when a chuck finish upload
+      };
+
+      fileHelper.UploadFinishFiles_Event += (List<UploadFiles> uploadedFiles) =>
+      {
+          /// This event occur when all the files upload has finish
+          for (int i = 0; i < uploadedFiles.Count; i++)
+          {
+              UploadFiles upf = uploadedFiles[i]; // That is the model of files chunk when file are uploaded to the Secure Exchanges server
+              
+              string fileName = upf.RealFileName; // Real file name of the file
+              
+              int fileLength = upf.BytesLenght; // The file length (the size of the file). If you need the beauty filesize, you can use the GetTextSize
+
+              string fileHash = upf.Hash; // The Hex MD5 file hash
+              string fileSHA512 = upf.SHA512; // The file SHA512
+
+              double originalfile_totalPart = upf.TotalPart; // The total number of chunk part that file
+
+              Guid guid = upf.CryptedHandShakeID; // That is the cryptedHandShakeID that was use to upload the file
+          }
+
+      };
+      
       // Call the multicecipient method 
       MultiRecipientAnswer answer = MessageHelper.MultiRecipientMessage(args);
+      
+      var status = answer.Status; // The state could be 200, 403, ....
 ```
 
+### How to download a filepath and binary file
+```
+   ////////////////////////////// Upload Test ////////////////////////////////////
+
+   string filePath = GlobalSettings.LargeFilePath; // This is a large file path
+   string filePathBinary = GlobalSettings.smallFilePath; // This is a small binary file
+   filesPath.Add(filePathBinary); // A file list (we need it later in this example to compare)
+   
+   // A function that uploads the file path and the binary file and generates the link
+   var url = GenerateLinkForUploadedFile(filePath, filePathBinary);
+
+
+   ////////////////////////////// Download Test ////////////////////////////////////
+
+   var msg = ReadMessage(url, "", ""); // Get the message
+
+
+   FileHelper down_fh = new FileHelper(); // We create a FileHelper to attach event to downloaded files
+   
+   // Attaching event after each file download
+   down_fh.DownloadFinish_event += (DownloadedFileWithMetaData file) =>
+   {               
+       var filePath = file.FilePath; // The final file path downloaded
+       
+       var fileName = file.FileName; // The final file name downloaded       
+       
+       var state = file.FileState; // The file state of the downloaded file. The state could be Process, NotProcess ...       
+       
+       var isFileUncrypted = file.Uncrypted; // Is the file has been successfly uncrypted           
+       
+       bool isSuccess = file.Success; //If the file is flagged has succces                 
+   };
+
+   // Attaching event after all download finished
+   down_fh.DownloadsFinish_event += (List<DownloadedFile> files) =>
+   {
+       var numberOfFiles = files.Count; // Get the number of files in the collection
+   };
+   
+   //After attachement we can start the download
+   down_fh.DownloadSecureFiles(msg.FilesMetaData, "./download folder");
+```
+            
 ### Get the status of your send message ###
 
 If your code just send a message to someone, and need to get status about it
