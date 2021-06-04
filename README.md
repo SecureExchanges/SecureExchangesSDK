@@ -109,8 +109,8 @@ You will see an complete code sample in MessageHelperTest.cs
               
               int fileLength = upf.BytesLenght; // The file length (the size of the file). If you need the beauty filesize, you can use the GetTextSize
 
-              string fileHash = upf.Hash; // The Hex MD5 file hash
               string fileSHA512 = upf.SHA512; // The file SHA512
+              string fileHash = upf.Hash; // The Hex SHA512 file hash
 
               double originalfile_totalPart = upf.TotalPart; // The total number of chunk part that file
 
@@ -120,7 +120,7 @@ You will see an complete code sample in MessageHelperTest.cs
       };
       
       // Call the multicecipient method 
-      MultiRecipientAnswer answer = MessageHelper.MultiRecipientMessage(args);
+      MultiRecipientAnswer answer = MessageHelper.MultiRecipientMessage(args, fileHelper);
       
       var status = answer.Status; // The state could be 200, 403, ....
 ```
