@@ -1,7 +1,7 @@
 ### SandBox
 
 If you use the sandbox "preview", you must specify the file Handler and the SEMS Handler for the sandbox environment.
-Those Setthings are global to the application.
+Those Settings are global to the application.
 
 > SettingsHelper.CustomFileHandler = "https://preview.secure-exchanges.com/Handler/ReadFileTob64.ashx";
 > SettingsHelper.CustomSEMSEndpoint = "https://previewsems.secure-exchanges.com/SEMS_api.asmx";
@@ -12,7 +12,7 @@ Those Setthings are global to the application.
 You can define template of signature zones online and then use it with the API.
 If you send file witout defined signature zones ie.(Signature, initial, text, date, signature date, number) your recipient will be allowed to sign where he want.
 
-If you need to sign the file after all the recipients signs, you will need to set the value of the args.OwnerDontNeedToSign to "false". See code sample bellow or see the complete example in the **SendSignFile** method in the **[MessageHelperTest.cs](https://github.com/cboivin80/SecureExchangesSDK/blob/master/CodeSample/CodeSample/MessageHelperTest.cs)** class.
+If you need to sign the file after all the recipients signs, you will need to set the value of the args.OwnerDontNeedToSign to "false". See code sample bellow or see the complete example in the **SendSignFile** method in the **[MessageHelperTest.cs](https://github.com/cboivin80/SecureExchangesSDK/blob/master/CodeSample/CodeSample/MessageHelperTest.cs#L185)** class.
 >       //Create the message args
 >       var args = new MutliRecipientArgs(
 >          EndPointURI,      /// The endpoint configuration name of Secure Exchanges
@@ -52,8 +52,8 @@ If you need to sign the file after all the recipients signs, you will need to se
 
 ### How to send a message with events ###
 
-It's very easy to send a message with file or not with Secure Exchanges
-You will see an complete code sample in MessageHelperTest.cs
+It's very easy to send a message with file or not with Secure Exchanges =====================================================<<<<<<<<<<<<<<<<< ?????????? not in title subject
+You will see an complete code sample in **[MessageHelperTest.cs](https://github.com/cboivin80/SecureExchangesSDK/blob/master/CodeSample/CodeSample/MessageHelperTest.cs)** class.
 ```
  var args = new MutliRecipientArgs(
          EndPointURI,
