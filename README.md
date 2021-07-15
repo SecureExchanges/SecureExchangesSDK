@@ -1,3 +1,9 @@
+### SEcure Exchanges SDK
+
+Our SDK is available to download on Nuget at : https://www.nuget.org/packages/SecureExchanges/
+You can register your business for a licence at : https://www.secure-exchanges.com/packages-secure-transfer.aspx
+If you would like to test our SDK for your needs, please contact us at : support@secure-exchanges.com
+
 ### SandBox
 
 If you use the sandbox "preview", you must specify the file Handler and the SEMS Handler for the sandbox environment.
