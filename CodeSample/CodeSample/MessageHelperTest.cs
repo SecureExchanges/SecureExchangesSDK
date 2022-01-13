@@ -36,15 +36,15 @@ namespace SecureExchangesSamples
     /// put your API psw
     /// </summary>
     private Guid TestAPIPsw = new Guid(ConfigurationManager.AppSettings["APIPsw"].ToString());
-    private Uri EndPointURI 
+    private Uri EndPointURI
     {
 
       get
       {
         return EndpointHelper.EndPoint;
-      }     
+      }
 
-  }
+    }
 
     private string RootPath
     {
@@ -56,19 +56,30 @@ namespace SecureExchangesSamples
     /// <summary>
     /// This is an example how to send message to multiple recipient.
     /// </summary>
-    [TestMethod]
-    public MultiRecipientAnswer MultiSendEmailWithLocalFiles()
+
+    public MultiRecipientAnswer MultiSendEmailWithLocalFiles(bool useFileArgs = false)
     {
       // Create a files list path : physical path
       List<string> files = new List<string>();
       // Get the project path
 
-
-      // Append the file to send and encrypt
-      files.Add(Path.Combine(RootPath, "Files", "logo-full.png"));
+      if (!useFileArgs)
+        // Append the file to send and encrypt
+        files.Add(Path.Combine(RootPath, "Files", "logo-full.png"));
 
       // Fill this list if your have memory file to encrypt and send has attachment
       List<FileArgs> filesArgs = null;
+
+      // If you want to fille the fileargs with binary
+      if (useFileArgs)
+      {
+        string fileName = Path.GetFileName(Path.Combine(RootPath, "Files", "logo-full.png"));
+        filesArgs = new List<FileArgs>()
+      {
+        new FileArgs(File.ReadAllBytes(Path.Combine(RootPath, "Files", "logo-full.png")),fileName,MimeHelper.GetMIMEType(fileName))
+
+      };
+      }
 
       // Configure the message body, and the subject
       string HTMLBody = "<strong>This is my html message</strong>";
@@ -175,7 +186,7 @@ namespace SecureExchangesSamples
     /// <param name="password"></param>
     /// <param name="digit"></param>
     [TestMethod]
-    public void SendAndReadMessage()
+    public void SendAndReadMessageWithFilePath()
     {
       var answer = MultiSendEmailWithLocalFiles();
       if (answer.Status == 200)
@@ -188,9 +199,29 @@ namespace SecureExchangesSamples
     }
 
     /// <summary>
+    /// That case is not real, but let you see how the SDK are able to send a secure message, then read the same message.
+    /// </summary>
+    /// <param name="link"></param>
+    /// <param name="password"></param>
+    /// <param name="digit"></param>
+    [TestMethod]
+    public void SendAndReadMessageWithFileArgs()
+    {
+      // se the value at true, to use the fileargs
+      var answer = MultiSendEmailWithLocalFiles(true);
+      if (answer.Status == 200)
+      {
+        foreach (var messageAnswer in answer.RecipientsAnswer)
+        {
+          ReadSecureExchangesMessage(messageAnswer.Answer.URL, _globalPassword, null);
+        }
+      }
+    }
+
+    /// <summary>
     /// Show how we can send secure file to get signed
     /// </summary>
-    [TestMethod]   
+    [TestMethod]
     public void SendSignFile()
     {
       // Create a list of recipient. Phone number could be filled to received SMS

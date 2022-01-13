@@ -61,8 +61,8 @@
       <HintPath>..\packages\libphonenumber-csharp.8.12.8\lib\net46\PhoneNumbers.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SecureExchangesSDK, Version=5.1.0.0, Culture=neutral, PublicKeyToken=7c60f8faf07dc105, processorArchitecture=MSIL">
-      <HintPath>..\packages\SecureExchanges.5.1.0\lib\net45\SecureExchangesSDK.dll</HintPath>
+    <Reference Include="SecureExchangesSDK, Version=5.2.10.1, Culture=neutral, PublicKeyToken=7c60f8faf07dc105, processorArchitecture=MSIL">
+      <HintPath>..\packages\SecureExchanges.5.2.10.1\lib\net45\SecureExchangesSDK.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -98,7 +98,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="favicon.ico" />
     <Content Include="Files\logo-full.png" />
   </ItemGroup>
   <ItemGroup>
