@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Reflection;
+using CodeSample.Helper;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SecureExchangesSDK.Helpers;
 using SecureExchangesSDK.Models;
@@ -35,7 +36,15 @@ namespace SecureExchangesSamples
     /// put your API psw
     /// </summary>
     private Guid TestAPIPsw = new Guid(ConfigurationManager.AppSettings["APIPsw"].ToString());
-    private Uri EndPointURI = new Uri("https://www.secure-exchanges.com/_api/0217/0217.asmx");
+    private Uri EndPointURI 
+    {
+
+      get
+      {
+        return EndpointHelper.EndPoint;
+      }     
+
+  }
 
     private string RootPath
     {
