@@ -344,7 +344,7 @@ namespace SecureExchangesSamples
     {
       SecureExchangesMessage msg = MessageHelper.GetSecureExchangesMessageFromLink(link);
 
-      GetMessageResponse messageResponse = SecureExchangesSDK.Helpers.MessageHelper.GetMessage(new SecureExchangesSDK.Models.Args.GetMessageArgs(EndPointURI, TestSerialNumber, TestAPIUser, TestAPIPsw, msg.MessageID, msg.Cpart, msg.Sems, msg.NIv, msg.P2, password, msg.Pit, digit, msg.Sit));
+      GetMessageResponse messageResponse = SecureExchangesSDK.Helpers.MessageHelper.GetMessage(new SecureExchangesSDK.Models.Args.GetMessageArgs(EndPointURI, TestSerialNumber, TestAPIUser, TestAPIPsw, msg));
       if (messageResponse != null)
       {
         // this will be the un encrypted message
