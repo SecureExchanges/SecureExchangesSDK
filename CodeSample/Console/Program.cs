@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Task = System.Threading.Tasks.Task;
 
 namespace ConsoleSample
 {
@@ -21,38 +22,13 @@ namespace ConsoleSample
   class Program
   {
 
-    public static Uri EndPoint
+    static async Task Main(string[] args)
     {
-      get
-      {
-        if (ConfigurationManager.AppSettings["IsSandBox"] != null && bool.Parse(ConfigurationManager.AppSettings["IsSandBox"].ToString()))
-        {
-          // By default the SDK know the production fileHandler and SEMS handler. In sandbox mode we must specify.
-          SettingsHelper.CustomFileHandler = "https://preview.secure-exchanges.com/Handler/ReadFileTob64.ashx"; // Set the file handler to sandbox
-          SettingsHelper.CustomSEMSEndpoint = "https://previewsems.secure-exchanges.com/SEMS_api.asmx"; // Set the SEMS endpoint to sandbox
-          // Set the Sandbox URI and the SANDBOX handler
-          return new Uri("https://preview.secure-exchanges.com/_api/0217/0217.asmx");
-        }
-        return new Uri("https://www.secure-exchanges.com/_api/0217/0217.asmx");
-      }
-    }
+      //GetEnveloppe.GetOne();
+      //GetEnveloppe.GetMany();
+      //await PkiFileToSignWithSignatureOptions.Send();
+      //return;
 
-
-    /// <summary>
-    /// Put your serial number
-    /// </summary>
-    private static Guid TestSerialNumber = new Guid(ConfigurationManager.AppSettings["Serial"].ToString());
-    /// <summary>
-    /// Put your api number
-    /// </summary>
-    private static Guid TestAPIUser = new Guid(ConfigurationManager.AppSettings["APIUser"].ToString());
-    /// <summary>
-    /// put your API psw
-    /// </summary>
-    private static Guid TestAPIPsw = new Guid(ConfigurationManager.AppSettings["APIPsw"].ToString());
-
-    static void Main(string[] args)
-    {
        int intMode = 0;
       SendMethodEnum sendingMode = SendMethodEnum.onlyEmail;
       while (intMode <= 0 || intMode > 2)
@@ -169,10 +145,10 @@ namespace ConsoleSample
       string culture = "fr-CA";
       //Create the message args
       var args = new MutliRecipientArgs(
-         EndPoint,
-         TestSerialNumber,
-         TestAPIUser,
-         TestAPIPsw,
+         Config.EndPoint,
+         Config.SerialNumber,
+         Config.APIUser,
+         Config.APIPsw,
          recipients,
          HTMLBody,
          EmailSubject,
