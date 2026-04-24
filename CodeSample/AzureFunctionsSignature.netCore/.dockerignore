@@ -1,0 +1,27 @@
+# Build artifacts
+bin/
+obj/
+
+# IDE / VS
+.vs/
+.vscode/
+*.user
+*.suo
+
+# Dev settings (must NOT ship to prod)
+local.settings.json
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Logs / temp
+*.log
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Docs
+*.md

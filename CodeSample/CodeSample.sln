@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35931.197 d17.13
+VisualStudioVersion = 17.13.35931.197
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeSample", "CodeSample\CodeSample.csproj", "{A3B94550-47AC-4FB9-9DB2-63F1BFBEF38A}"
 EndProject
@@ -13,6 +13,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleSample", "Console\ConsoleSample.csproj", "{37DF74D5-F0A2-4709-B84F-07CAF8A93BE3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenerateSESARManifestWebHook", "Tool\GenerateSESARManifestWebHook\GenerateSESARManifestWebHook.csproj", "{24EA7820-E3E3-47B6-9505-598F59CB41C9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureFunctionsSignature.netCore", "AzureFunctionsSignature.netCore\AzureFunctionsSignature.netCore.csproj", "{751F9ACA-91E1-03B4-5D32-0BBDE1A2B237}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,6 +34,10 @@ Global
 		{24EA7820-E3E3-47B6-9505-598F59CB41C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{24EA7820-E3E3-47B6-9505-598F59CB41C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{24EA7820-E3E3-47B6-9505-598F59CB41C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{751F9ACA-91E1-03B4-5D32-0BBDE1A2B237}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{751F9ACA-91E1-03B4-5D32-0BBDE1A2B237}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{751F9ACA-91E1-03B4-5D32-0BBDE1A2B237}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{751F9ACA-91E1-03B4-5D32-0BBDE1A2B237}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
